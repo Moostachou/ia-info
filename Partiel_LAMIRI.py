@@ -107,46 +107,46 @@ else:
 
 
 # Create a Streamlit app to get input data and display predictions
-st.title("Predicting Student Retention")
+st.title("Prédire le décrochage et la réussite scolaire")
 
 # Get input data from user
-age = st.number_input("Age at enrollment:", min_value=16, max_value=60, value=18, step=1)
-gender = st.selectbox("Gender:", options=["Male", "Female"])
-income = st.number_input("Income:", min_value=0, max_value=200000, value=50000, step=1000)
-course = st.selectbox("Course:", options=["Science", "Arts", "Commerce"])
-units = st.number_input("Curricular units 1st sem (approved):", min_value=0, max_value=10, value=5, step=1)
-application_mode = st.selectbox("Application mode:", options=["Online", "Offline"])
-application_order = st.selectbox("Application order:", options=["First", "Second", "Third"])
+age = st.number_input("Age à l'inscription:", min_value=16, max_value=60, value=18, step=1)
+gender = st.selectbox("Genre:", options=["Male", "Female"])
+income = st.number_input("Revenu:", min_value=0, max_value=200000, value=50000, step=1000)
+course = st.selectbox("Cours:", options=["Science", "Arts", "Commerce"])
+units = st.number_input("Module validé au 1er semestre:", min_value=0, max_value=10, value=5, step=1)
+application_mode = st.selectbox("Type de cours:", options=["En ligne", "Présentiel"])
+application_order = st.selectbox("Ordre de candidature:", options=["Premiers", "Second", "Troisieme"])
 
 # Create a Pandas DataFrame with the input data
 input_data = pd.DataFrame({
-    "Age at enrollment": [age],
-    "Gender": [gender],
-    "Income": [income],
-    "Course": [course],
-    "Curricular units 1st sem (approved)": [units],
-    "Application mode": [application_mode],
-    "Application order": [application_order]
+    "Age à l'inscription": [age],
+    "Genre": [gender],
+    "Revenu": [income],
+    "Cours": [course],
+    "Module validé au 1er semestre": [units],
+    "Type de cours": [application_mode],
+    "Ordre de candidature": [application_order]
 })
 
 # Define a function to predict the retention status
 def predict_retention(input_data):
-    if input_data["Gender"].values[0] == "Male":
-        if input_data["Income"].values[0] < 30000:
-            return "Not retained"
+    if input_data["Genre"].values[0] == "Male":
+        if input_data["Revenu"].values[0] < 30000:
+            return "Non retenu"
         else:
-            return "Retained"
+            return "Retenu"
     else:
-        if input_data["Course"].values[0] == "Commerce":
-            if input_data["Curricular units 1st sem (approved)"].values[0] < 4:
-                return "Not retained"
+        if input_data["Cours"].values[0] == "Commerce":
+            if input_data["Module validé au 1er semestre"].values[0] < 4:
+                return "Non retenu"
             else:
-                return "Retained"
+                return "Retenu"
         else:
-            if input_data["Age at enrollment"].values[0] < 20:
-                return "Retained"
+            if input_data["Age à l'inscription"].values[0] < 20:
+                return "Retenu"
             else:
-                return "Not retained"
+                return "Non retenu"
 
 # Make a prediction on the input data
 prediction = predict_retention(input_data)
