@@ -1,5 +1,11 @@
 import pandas as pd
+import streamlit as st
 from imblearn.over_sampling import SMOTE
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 
 # Charger le jeu de données dans un dataframe
 data = pd.read_csv('dataset.csv')
@@ -58,15 +64,6 @@ normalized_data = pd.DataFrame(scaled_data, columns=encoded_data.columns)
 # Vérifier les données normalisées
 print(normalized_data.head())
 
-
-
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-import pandas as pd
-
 # Séparer les caractéristiques et les étiquettes
 X = data.drop('Target', axis=1)
 y = data['Target']
@@ -109,33 +106,50 @@ else:
     print("Random Forest Classifier is the best")
 
 
+# Create a Streamlit app to get input data and display predictions
+st.title("Predicting Student Retention")
 
-import streamlit as st
-import pandas as pd
-# Define the input fields
-st.write('## Prediction Form')
-age = st.number_input('Age at enrollment', min_value=16, max_value=100, value=18, step=1)
-gender = st.selectbox('Gender', ['Male', 'Female'])
-income = st.number_input('Income', min_value=0, max_value=1000000, value=50000, step=1000)
-application_mode = st.selectbox('Application mode', ['Online', 'Paper'])
-application_order = st.number_input('Application order', min_value=1, max_value=10, value=1, step=1)
-course = st.selectbox('Course', ['Bachelor of Arts', 'Bachelor of Science'])
-curricular_units = st.number_input('Curricular units 1st sem (approved)', min_value=0, max_value=100, value=20, step=1)
+# Get input data from user
+age = st.number_input("Age at enrollment:", min_value=16, max_value=60, value=18, step=1)
+gender = st.selectbox("Gender:", options=["Male", "Female"])
+income = st.number_input("Income:", min_value=0, max_value=200000, value=50000, step=1000)
+course = st.selectbox("Course:", options=["Science", "Arts", "Commerce"])
+units = st.number_input("Curricular units 1st sem (approved):", min_value=0, max_value=10, value=5, step=1)
+application_mode = st.selectbox("Application mode:", options=["Online", "Offline"])
+application_order = st.selectbox("Application order:", options=["First", "Second", "Third"])
 
-# Define a function to make predictions
-def predict_retention(age, gender, income, application_mode, application_order, course, curricular_units):
-    data = {'Age at enrollment': age,
-            'Sex': gender,
-            'Income': income,
-            'Application mode': application_mode,
-            'Application order': application_order,
-            'Course': course,
-            'Curricular units 1st sem (approved)': curricular_units}
-    df = pd.DataFrame(data, index=[0])
-    prediction = data.predict(df)[0]
-    return prediction
+# Create a Pandas DataFrame with the input data
+input_data = pd.DataFrame({
+    "Age at enrollment": [age],
+    "Gender": [gender],
+    "Income": [income],
+    "Course": [course],
+    "Curricular units 1st sem (approved)": [units],
+    "Application mode": [application_mode],
+    "Application order": [application_order]
+})
 
-# Make a prediction and display the result
-if st.button('Predict retention'):
-    result = predict_retention(age, gender, income, application_mode, application_order, course, curricular_units)
-    st.write('Retention prediction:', result)
+# Define a function to predict the retention status
+def predict_retention(input_data):
+    if input_data["Gender"].values[0] == "Male":
+        if input_data["Income"].values[0] < 30000:
+            return "Not retained"
+        else:
+            return "Retained"
+    else:
+        if input_data["Course"].values[0] == "Commerce":
+            if input_data["Curricular units 1st sem (approved)"].values[0] < 4:
+                return "Not retained"
+            else:
+                return "Retained"
+        else:
+            if input_data["Age at enrollment"].values[0] < 20:
+                return "Retained"
+            else:
+                return "Not retained"
+
+# Make a prediction on the input data
+prediction = predict_retention(input_data)
+
+# Display the prediction to the user
+st.write("Predicted retention status:", prediction)
