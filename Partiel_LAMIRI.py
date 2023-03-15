@@ -152,4 +152,4 @@ def predict_retention(input_data):
 prediction = predict_retention(input_data)
 
 # Display the prediction to the user
-st.write("Predicted retention status:", prediction)
+st.write("Statut de rétention prévu:", prediction)
